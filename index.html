@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Phorma — Dot Typeface</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css?v=2" />
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/p5@1.9.3/lib/p5.min.js"
+    ></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <h1>Phorma</h1>
+      <div class="spacer"></div>
+      <button id="btnRandom" class="btn">Random</button>
+      <button id="btnPng" class="btn">Esporta PNG</button>
+      <button id="btnSvg" class="btn">Esporta SVG</button>
+    </header>
+
+    <div id="app">
+      <aside id="sidebar">
+        <div class="tabbar" role="tablist">
+          <button
+            type="button"
+            class="tab active"
+            role="tab"
+            aria-selected="true"
+            data-tab-target="content"
+          >
+            Contenuto
+          </button>
+          <button
+            type="button"
+            class="tab"
+            role="tab"
+            aria-selected="false"
+            data-tab-target="grid"
+          >
+            Griglia & Forma
+          </button>
+          <button
+            type="button"
+            class="tab"
+            role="tab"
+            aria-selected="false"
+            data-tab-target="anim"
+          >
+            Animazione
+          </button>
+          <button
+            type="button"
+            class="tab"
+            role="tab"
+            aria-selected="false"
+            data-tab-target="stile"
+          >
+            Stile
+          </button>
+          <button
+            type="button"
+            class="tab"
+            role="tab"
+            aria-selected="false"
+            data-tab-target="export"
+          >
+            Export
+          </button>
+        </div>
+
+        <!-- CONTENUTO -->
+        <section class="panel" data-tab="content">
+          <h2>Testo</h2>
+          <div class="row">
+            <label for="word">Testo (puoi andare a capo)</label>
+            <textarea id="word">PHORMA</textarea>
+          </div>
+          <div class="row">
+            <label for="font">Font CSS (shorthand)</label>
+            <input
+              id="font"
+              type="text"
+              value="700 280px/1 Inter, system-ui, sans-serif"
+            />
+            <small class="hintbar"
+              >Esempi: <code>bold 240px/1 Inter, sans-serif</code> •
+              <code>italic 220px/0.9 Georgia, serif</code></small
+            >
+          </div>
+          <div class="row">
+            <label for="mode">Modalità</label>
+            <select id="mode">
+              <option value="A" selected>Clean</option>
+              <option value="B">Sharp</option>
+              <option value="C">Chaos (jitter/variance)</option>
+            </select>
+          </div>
+          <div class="row">
+            <label>Margine</label>
+            <input id="margin" type="range" min="0" max="160" value="24" />
+          </div>
+        </section>
+
+        <!-- GRIGLIA & FORMA -->
+        <section class="panel" data-tab="grid">
+          <h2>Campionamento</h2>
+          <div class="row">
+            <label>Cell size</label>
+            <input id="cell" type="range" min="6" max="60" value="22" />
+          </div>
+          <div class="row">
+            <label>Dot % (diametro vs cella)</label>
+            <input id="dot" type="range" min="10" max="100" value="72" />
+          </div>
+          <div class="row">
+            <label>Threshold</label>
+            <input id="th" type="range" min="0" max="255" value="160" />
+          </div>
+          <div class="row">
+            <label>Shape</label>
+            <select id="shape">
+              <option value="circle" selected>Cerchio</option>
+              <option value="square">Quadrato</option>
+              <option value="diamond">Rombo</option>
+              <option value="triangle">Triangolo</option>
+              <option value="hexagon">Esagono</option>
+              <option value="custom">Custom (SVG path)</option>
+            </select>
+          </div>
+          <div class="row" id="customRow" hidden>
+            <label>SVG Path (viewBox -0.5..0.5)</label>
+            <textarea id="customPath">
+M -0.5 0 L 0 -0.5 L 0.5 0 L 0 0.5 Z</textarea
+            >
+            <small class="hintbar"
+              >Inserisci un <code>path</code> SVG. Verrà scalato al size del
+              dot. Esempio: rombo sopra.</small
+            >
+          </div>
+          <div class="row">
+            <label>Outline</label>
+            <select id="outline">
+              <option value="none" selected>Nessuno</option>
+              <option value="thin">Sottile</option>
+              <option value="bold">Bold</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <h3>Chaos (attivo in modalità “C”)</h3>
+            <div class="row">
+              <label>Jitter (0–0.5× cell)</label>
+              <input
+                id="jitter"
+                type="range"
+                min="0"
+                max="0.5"
+                step="0.01"
+                value="0.16"
+              />
+            </div>
+            <div class="row">
+              <label>Variance (dimensione)</label>
+              <input
+                id="variance"
+                type="range"
+                min="0"
+                max="0.5"
+                step="0.01"
+                value="0.16"
+              />
+            </div>
+          </div>
+        </section>
+
+        <!-- ANIM -->
+        <section class="panel" data-tab="anim">
+          <h2>Animazione</h2>
+          <div class="row">
+            <label>Tipo</label>
+            <select id="anim">
+              <option value="off" selected>Off</option>
+              <option value="jitter">Jitter</option>
+              <option value="morph">Morph</option>
+            </select>
+          </div>
+          <div class="row">
+            <label>Velocità</label>
+            <input
+              id="speed"
+              type="range"
+              min="0.1"
+              max="3"
+              step="0.1"
+              value="1"
+            />
+          </div>
+          <div class="row" id="morphRow" hidden>
+            <label>Bersaglio morph</label>
+            <select id="morphTarget">
+              <option value="diamond">Diamond</option>
+              <option value="circle" selected>Circle</option>
+              <option value="square">Square</option>
+            </select>
+            <small class="hintbar"
+              >Il morph usa una super-ellisse per transizionare
+              (diamond→circle→square).</small
+            >
+          </div>
+          <div class="row">
+            <button id="btnPlay" class="btn">Play</button>
+            <button id="btnPause" class="btn">Pause</button>
+          </div>
+        </section>
+
+        <!-- STILE -->
+        <section class="panel" data-tab="stile">
+          <h2>Colori</h2>
+          <div class="row">
+            <label>Foreground</label>
+            <input id="fg" type="color" value="#111111" />
+          </div>
+          <div class="row">
+            <label>Background</label>
+            <input id="bg" type="color" value="#ffffff" />
+          </div>
+        </section>
+
+        <!-- EXPORT -->
+        <section class="panel" data-tab="export">
+          <h2>Azioni</h2>
+          <div class="row">
+            <button id="actionRandom" class="btn">Random</button>
+          </div>
+          <div class="row">
+            <button id="actionPng" class="btn">Salva PNG</button>
+          </div>
+          <div class="row">
+            <button id="actionSvg" class="btn">Esporta SVG</button>
+          </div>
+          <div class="row">
+            <div id="hint" class="hintbar">—</div>
+          </div>
+        </section>
+      </aside>
+
+      <main id="stage">
+        <div id="canvasWrap">
+          <div id="canvasMount"></div>
+        </div>
+        <div class="hintbar">
+          Doppio clic sugli slider per ripristinare il valore di default. Le tab
+          “Animazione” e “Griglia & Forma” lavorano insieme.
+        </div>
+      </main>
+    </div>
+
+    <script defer src="./app.js?v=2"></script>
+  </body>
+</html>
